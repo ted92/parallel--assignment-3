@@ -12,7 +12,5 @@ pybuild: mandel_ctypes.c
 	gcc -shared -fopenmp -Wl,-soname,libmandel.so -o libmandel.so mandel_ctypes.o
 
 clean:
-	rm *.pyc
+	rm -f *.pyc libmandel.so mandel_ctypes.o
 	rm -rf build
-	rm libmandel.so
-	rm mandel_ctypes.o
