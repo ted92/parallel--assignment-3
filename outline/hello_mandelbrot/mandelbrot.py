@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 SHOW_IMAGES=False
-SIZE=1024
+SIZE=2048
 
 import numpy as np
 if SHOW_IMAGES:
@@ -9,6 +9,7 @@ if SHOW_IMAGES:
 import time
 
 import mandelc
+import mandelcuda
 import mandelcuda
 import mandelctypes
 import mandelc_wrapper
@@ -31,7 +32,7 @@ def main():
     result_python = np.zeros((SIZE,SIZE), dtype=np.uint8)
     result_c = np.zeros_like(result_python)
     result_cuda = np.zeros_like(result_python)
-    result_ctypes = np.zeros_like(result_python)
+    # result_ctypes = np.zeros_like(result_python)
 
     # Generate coordinates in mandelbrot space
     x_c, y_c = generate_coords(result_python)
@@ -39,16 +40,16 @@ def main():
     start_time()
 
     # Python test
-    #mandelbrot(result_python, (x_c, y_c), SIZE)
-    stop_time("Python")
+    # mandelbrot(result_python, (x_c, y_c), SIZE)
+    # stop_time("Python")
 
     # C extension test
     mandelc_wrapper.mandelbrot(result_c, (x_c, y_c), SIZE)
     stop_time("C extension")
 
     # Ctypes test
-    mandelctypes.mandelbrot(result_ctypes, (x_c, y_c), SIZE)
-    stop_time("ctypes")
+    # mandelctypes.mandelbrot(result_ctypes, (x_c, y_c), SIZE)
+    # stop_time("ctypes")
 
     # Cuda test
     mandelcuda.mandelbrot(result_cuda, (x_c, y_c), SIZE)
@@ -58,12 +59,12 @@ def main():
     if(SHOW_IMAGES):
         plt.imshow(result_cuda)
         plt.show()
-        plt.imshow(result_python)
-        plt.show()
+        # plt.imshow(result_python)
+        # plt.show()
         plt.imshow(result_c)
         plt.show()
-        plt.imshow(result_ctypes)
-        plt.show()
+        # plt.imshow(result_ctypes)
+        # plt.show()
 
 # Simple python implementation of the mandelbrot calculations
 def mandelbrot(array, coords, size):
