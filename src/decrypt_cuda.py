@@ -1,13 +1,26 @@
-import pycuda.autoinit
 import pycuda.driver as drv
-import pycuda.gpuarray as gpuarray
-import pycuda.compiler
-import numpy as np
+import pycuda.tools
+import pycuda.autoinit
+import numpy
+import numpy.linalg as la
+from pycuda.compiler import SourceModule
 
-# Generate source module
-f = open("cuda_kernel.cu", 'r')
+mod = SourceModule("""
+__global__ void multiply_them(float *dest, float *a, float *b)
+{
+  const int i = threadIdx.x;
+  dest[i] = a[i] * b[i];
+}
+""")
 
-sm = pycuda.compiler.SourceModule(f.read(), options=['-lineinfo'])
+multiply_them = mod.get_function("multiply_them")
 
-def guess_password(max_length, in_data, known_part):
-    func = sm.get_function("guess_password")
+a = numpy.random.randn(400).astype(numpy.float32)
+b = numpy.random.randn(400).astype(numpy.float32)
+
+dest = numpy.zeros_like(a)
+multiply_them(
+        drv.Out(dest), drv.In(a), drv.In(b),
+        block=(400,1,1))
+
+print dest-a*b
