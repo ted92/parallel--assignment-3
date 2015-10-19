@@ -2,6 +2,7 @@
 
 import argparse
 import precode
+import time
 
 def main():
     parser = argparse.ArgumentParser(description='Encrypt a message with CBC XTEA')
@@ -13,15 +14,18 @@ def main():
     args = parser.parse_args()
 
     encrypted = precode.load_secret(args.input)
+
     if(args.p):
         if(precode.try_password(encrypted, args.p, args.known)):
             print("Password is correct")
         else:
             print("The password is incorrect")
     else:
+        start_time = time.time()
         result = precode.guess_password(args.l, encrypted, args.known)
+        end_time = time.time()
         if(type(result) != bool):
-            print("Password found: " + result)
+            print("Password found: " + result + "\nTime: " + str(end_time - start_time))
     
 
 if __name__ == "__main__":

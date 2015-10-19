@@ -22,6 +22,8 @@ def main():
     Prints out the time it took.
     """
     secret = generate_secret(1000, "this is secret, but safe")
+    # numpy array which contains the message in a random order in 8 bit and the order in the other 24 bit
+
     encrypted = encrypt_bytes(secret, "Z")
     start_time = time.time()
     result = guess_password(3, encrypted, known)
@@ -49,7 +51,10 @@ def guess_password(max_length, in_data, known_part):
 
     # This is a fairly silly way to do this
     # Must be changed for longer passwords to avoid running out of RAM
+
+    # pull all the possible strings
     guesses = collections.deque(string.printable)
+
     while(guesses):
         cur_guess = guesses.popleft()
         if(len(cur_guess) > max_length):
