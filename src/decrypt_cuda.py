@@ -1,26 +1,22 @@
 import pycuda.driver as drv
 import pycuda.tools
 import pycuda.autoinit
-import numpy
+import numpy as np
 import numpy.linalg as la
 from pycuda.compiler import SourceModule
 
-mod = SourceModule("""
-__global__ void multiply_them(float *dest, float *a, float *b)
-{
-  const int i = threadIdx.x;
-  dest[i] = a[i] * b[i];
-}
-""")
+f = open("try_cuda.cu", 'r')
+sm = pycuda.compiler.SourceModule(f.read(), options=['-lineinfo'])
 
-multiply_them = mod.get_function("multiply_them")
+def multiply_them():
+    # get function pointer
+    func = sm.get_function("multiply_them")
 
-a = numpy.random.randn(400).astype(numpy.float32)
-b = numpy.random.randn(400).astype(numpy.float32)
+    a = numpy.random.randn(400).astype(numpy.float32)
+    b = numpy.random.randn(400).astype(numpy.float32)
+    dest = numpy.zeros_like(a)
 
-dest = numpy.zeros_like(a)
-multiply_them(
-        drv.Out(dest), drv.In(a), drv.In(b),
-        block=(400,1,1))
+    func(drv.Out(dest), drv.In(a), drv.In(b),block=(400,1,1))
 
-print dest-a*b
+    print dest-a*b
+

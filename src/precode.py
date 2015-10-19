@@ -12,6 +12,7 @@ import hashlib
 import string
 import collections
 import time
+import decrypt_cuda
 
 base_path = "."
 known = "but safe"
@@ -26,7 +27,12 @@ def main():
 
     encrypted = encrypt_bytes(secret, "Z")
     start_time = time.time()
-    result = guess_password(3, encrypted, known)
+    # cuda result
+
+    decrypt_cuda.multiply_them()
+
+
+    # result = guess_password(3, encrypted, known)
     end_time = time.time()
     print("The password is \"" + result + "\"\nTime taken (Python): " + str(end_time - start_time))
 
