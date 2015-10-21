@@ -20,16 +20,16 @@ def decipher(num_rounds, input_data, key):
     key -- 128-bit key to use
 
     returns -- a numpy array containing the deciphered data"""
-    v0 = input_data[0]
-    v1 = input_data[1]
+
     delta = 0x9e3779b9L
     mask = 0xffffffffL
     sum = (delta*num_rounds) & mask
 
-    # number of thread
-    n_thread = len(num_rounds)
-    func(drv.InOut(v0), drv.InOut(v1), drv.In(sum), drv.In(key), drvIn(delta), drvIn(mask), block=(n_thread,1,1))
+    # number of thread = num_rounds
+    func(drv.InOut(input_data), np.int32(sum), drv.In(key), np.int32(delta), np.int32(mask), block=(num_rounds,1,1))
 
+    v0 = input_data[0]
+    v1 = input_data[1]
     return np.array([v0, v1], dtype=np.uint32)
 
 
