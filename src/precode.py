@@ -129,6 +129,10 @@ def decrypt_bytes(bytes_in, key):
     while(i < length - 1):
         # calling the cuda function
         output[i:i+2] = np.bitwise_xor(decrypt_cuda.decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
+
+        #calling the normale function
+        # output[i:i+2] = np.bitwise_xor(decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
+
         prev_decrypt = bytes_in[i:i+2]
         i += 2
     return output

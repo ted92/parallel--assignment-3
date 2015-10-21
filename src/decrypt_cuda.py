@@ -28,7 +28,7 @@ def decipher(num_rounds, input_data, key):
 
     # number of thread
     n_thread = len(num_rounds)
-    func(drv.InOut(v0), drv.InOut(v1), drv.In(sum), block=(n_thread,1,1))
+    func(drv.InOut(v0), drv.InOut(v1), drv.In(sum), drv.In(key), drvIn(delta), drvIn(mask), block=(n_thread,1,1))
 
     return np.array([v0, v1], dtype=np.uint32)
 
