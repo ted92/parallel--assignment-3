@@ -12,7 +12,7 @@ import hashlib
 import string
 import collections
 import time
-import decrypt_cuda
+# import decrypt_cuda
 
 base_path = "."
 known = "but safe"
@@ -27,6 +27,10 @@ def main():
 
     encrypted = encrypt_bytes(secret, "Z")
     start_time = time.time()
+    # cuda result
+
+    # decrypt_cuda.multiply_them()
+
 
     result = guess_password(3, encrypted, known)
     end_time = time.time()
@@ -127,8 +131,7 @@ def decrypt_bytes(bytes_in, key):
     i = 0
     length = len(bytes_in)
     while(i < length - 1):
-        # calling the cuda function
-        output[i:i+2] = np.bitwise_xor(decrypt_cuda.decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
+        output[i:i+2] = np.bitwise_xor(decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
         prev_decrypt = bytes_in[i:i+2]
         i += 2
     return output
@@ -209,8 +212,6 @@ def encipher(num_rounds, input_data, key):
         v1 = (v1 + (((v0<<4 ^ v0>>5) + v0) ^ (sum + key[sum>>11 & 3]))) & mask
     return np.array([v0, v1], dtype=np.uint32)
 
-
-# do not call this decipher but the one in decrypt_cuda
 def decipher(num_rounds, input_data, key):
     """XTEA implementation in python, decryption.
 
@@ -227,6 +228,9 @@ def decipher(num_rounds, input_data, key):
     delta = 0x9e3779b9L
     mask = 0xffffffffL
     sum = (delta*num_rounds) & mask
+    print type(sum)
+    print type(v0)
+    print type(v1)
 
     for round in range(num_rounds):
         v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ (sum + key[sum>>11 & 3]))) & mask

@@ -1,23 +1,14 @@
-__global__ string guess_password(int max_length, string* data_in, string known)
+__global__ void decipher(unsigned int v0, unsigned int v1, int sum)
 {
-	guesses = collections.deque(string.printable)
+    // declare shared variables inside the block
+    __shared__ unsigned int v0 = v0;
+    __shared__ unsigned int v1 = v1;
+    __shared__ int sum = sum;
 
-    while(guesses){
-        cur_guess = guesses.popleft();
-        if(len(cur_guess) > max_length){
-            return FALSE;
-        }
-        if(try_password(in_data, cur_guess, known_part)){
-            return cur_guess;
-        }
-        else{
-            if(len(cur_guess) != max_length){
-                int i;
-                char c[] = string.printable;
-                for (i = 0; i < strlen(string.printable); i++){
-                    guesses.append(cur_guess + c[i]);
-                }
-            }
-        }
-    }
+    // the number of the tread is not relevant
+
+    v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ (sum + key[sum>>11 & 3]))) & mask;
+    sum = (sum - delta) & mask;
+    v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ (sum + key[sum & 3]))) & mask;
+
 }
