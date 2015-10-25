@@ -67,9 +67,12 @@ def guess_password(max_length, in_data, known_part):
 
         # decrypt and recondtruct the message
         # decrypt_bytes in here is more useful to split each key for each threads
-        #TODO: use decrypt_bytes in decrypt_cuda
+
+        # cuda version
         decrypted = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
-        decrypted = decrypt_bytes(in_data, cur_guess)
+
+        # sequential version
+        # decrypted = decrypt_bytes(in_data, cur_guess)
         reconstructed = reconstruct_secret(decrypted)
 
         if(try_password(reconstructed, known_part)):
