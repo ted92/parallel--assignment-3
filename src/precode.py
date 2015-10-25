@@ -12,7 +12,7 @@ import hashlib
 import string
 import collections
 import time
-import decrypt_cuda
+# import decrypt_cuda
 
 base_path = "."
 known = "but safe"
@@ -28,6 +28,7 @@ def main():
     encrypted = encrypt_bytes(secret, "Z")
     start_time = time.time()
 
+    # sequential version
     result = guess_password(3, encrypted, known)
     end_time = time.time()
     print("The password is \"" + result + "\"\nTime taken (Python): " + str(end_time - start_time))
@@ -57,29 +58,35 @@ def guess_password(max_length, in_data, known_part):
     # pull all the possible strings
     guesses = collections.deque(string.printable)
 
+
     while(guesses):
         cur_guess = guesses.popleft()
+
         if(len(cur_guess) > max_length):
             return False
-        if(try_password(in_data, cur_guess, known_part)):
+
+        # decrypt and recondtruct the message
+        # decrypt_bytes in here is more useful to split each key for each threads
+        #TODO: use decrypt_bytes in decrypt_cuda
+        decrypted = decrypt_bytes(in_data, cur_guess)
+        reconstructed = reconstruct_secret(decrypted)
+
+        if(try_password(reconstructed, known_part)):
             return cur_guess
         else:
-            if(len(cur_guess) != max_length):
+            if(len(cur_guess) < max_length):
                 for char in string.printable:
                     guesses.append(cur_guess + char)
 
-def try_password(in_data, guess, known_part):
+def try_password(reconstructed, known_part):
     """Check if a password is correct by decrypting, reconstructing, and looking for the known string.
 
     Arguments:
-    in_data -- encrypted data
-    guess -- password to try
-    known_part -- known part of the plaintext
+        reconstructed -- message deciphred and reconstructed
+        known_part -- known part of the plaintext
 
     returns -- True if the guess is correct, False otherwise
     """
-    decrypted = decrypt_bytes(in_data, guess)
-    reconstructed = reconstruct_secret(decrypted)
     if(type(reconstructed) == bool):
         return False
     if(known_part in reconstructed.tostring()):
@@ -127,11 +134,7 @@ def decrypt_bytes(bytes_in, key):
     i = 0
     length = len(bytes_in)
     while(i < length - 1):
-        # calling the cuda function
-        output[i:i+2] = np.bitwise_xor(decrypt_cuda.decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
-
-        #calling the nsequential function
-        # output[i:i+2] = np.bitwise_xor(decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
+        output[i:i+2] = np.bitwise_xor(decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
 
         prev_decrypt = bytes_in[i:i+2]
         i += 2

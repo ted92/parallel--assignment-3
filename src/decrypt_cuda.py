@@ -3,45 +3,45 @@ import pycuda.tools
 import pycuda.autoinit
 import numpy as np
 import numpy.linalg as la
+import precode
 from pycuda.compiler import SourceModule
 
 f = open("cuda_kernel.cu", 'r')
 sm = pycuda.compiler.SourceModule(f.read(), options=['-lineinfo'])
 
-def decipher(num_rounds, input_data, key):
+# decrypt_bytes function which will call the cuda_kernel
+def decrypt_bytes(bytes_in, key):
+    # get the function from the cuda_kernel
     func = sm.get_function("decipher")
-    """XTEA implementation in python, decryption.
 
-    Modified version from Simon Biewald (http://varbin.github.io/xtea/)
+    # each thread will have a cur_guess
+    iv = np.array([1,2], dtype=np.uint32)
+    ha = np.fromstring(hashlib.md5(key).digest(), np.uint32)
 
-    Arguments:
-    num_rounds -- the number of iterations in the algorithm, 32 is reccomended
-    input_data -- the input data to use, 32 bits of the first 2 elements are used
-    key -- 128-bit key to use
+    output = np.empty_like(bytes_in)
+    prev_decrypt = iv
 
-    returns -- a numpy array containing the deciphered data"""
+    # assign a number < 1024 for the number of threads for each block
+    num_thread = 512
 
-    delta = 0x9e3779b9L
-    mask = 0xffffffffL
-    sum = (delta*num_rounds) & mask
-
-    # number of thread = num_rounds
-    func(drv.InOut(input_data), np.int32(sum), drv.In(key), np.int32(delta), np.int32(mask), block=(num_rounds,1,1))
-
-    v0 = input_data[0]
-    v1 = input_data[1]
-    return np.array([v0, v1], dtype=np.uint32)
+    # number of blocks is the total length divided for the number of threads per block and + 1 in case of rest
+    num_block = (len(bytes_in) / num_thread) + 1
 
 
-def multiply_them():
-    # get function pointer
-    func = sm.get_function("multiply_them")
+    # try cuda_kernel with passing of parameters
+    func(drvInOut(bytes_in),block=(num_thread,1,1), grid=(num_block,1,1))
 
-    a = np.random.randn(400).astype(np.float32)
-    b = np.random.randn(400).astype(np.float32)
-    dest = np.zeros_like(a)
+    print bytes_in[0]
 
-    func(drv.Out(dest), drv.In(a), drv.In(b),block=(400,1,1))
+"""
+    i = 0
+    length = len(bytes_in)
 
-    print dest-a*b
+    #TODO: Remove the while loops and call the cuda_kernel
+    while(i < length - 1):
+        output[i:i+2] = np.bitwise_xor(decipher(32, bytes_in[i:i+2], ha), prev_decrypt)
 
+        prev_decrypt = bytes_in[i:i+2]
+        i += 2
+    return output
+"""
