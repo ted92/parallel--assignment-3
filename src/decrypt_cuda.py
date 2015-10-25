@@ -21,22 +21,21 @@ def decrypt_bytes(bytes_in, key):
 
     output = np.empty_like(bytes_in)
     prev_decrypt = iv
+    length = len(bytes_in)
 
     # assign a number < 1024 for the number of threads for each block
     num_threads = 256
 
-    # number of blocks is the total length divided for the number of threads per block and + 1 in case of rest
-    num_blocks = (len(bytes_in) / num_threads) + 1
-
-    length = len(bytes_in)
+    # number of blocks is the total length divided by 2, divided for the number of threads per block and + 1 in case of rest
+    # /2 because in decipher each part of the message is processed in pair
+    num_blocks = ((len(bytes_in) / 2) / num_threads) + 1
 
     # call the function decipher and generate the output [v1,v2] nump array
-    decipher_output = np.empty_like(bytes_in)
+    decipher_output = np.empty(len(bytes_in), dtype=np.uint32)
 
     func(np.int32(32), drv.In(bytes_in), drv.In(ha), drv.InOut(decipher_output), np.int32(length), block=(num_threads,1,1), grid=(num_blocks,1,1))
 
     # now in decipher_output there are all the v0 and v1 couple
-    length = len(bytes_in)
     i = 0;
     while(i < length - 1):
         output[i:i+2] = np.bitwise_xor(decipher_output[i:i+2], prev_decrypt)
