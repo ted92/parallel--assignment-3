@@ -94,7 +94,7 @@ def guess_password(max_length, in_data, known_part):
             i = 0
             while (i < 500):
                 cur_guesses.append(guesses.popleft())
-                ++i
+                i = i + 1
             # return a list of decrypted messages
             decrypted_list = decrypt_cuda_v2.decrypt_bytes(in_data, cur_guesses)
 

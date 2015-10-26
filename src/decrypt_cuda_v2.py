@@ -12,6 +12,9 @@ sm = pycuda.compiler.SourceModule(f.read(), options=['-lineinfo'])
 
 # decrypt_bytes function which will call the cuda_kernel
 def decrypt_bytes(bytes_in, key_list):
+
+    # key_list -- list of 500 keys
+
     # get the function from the cuda_kernel
     func = sm.get_function("decipher")
 
@@ -19,12 +22,19 @@ def decrypt_bytes(bytes_in, key_list):
     # output = []
     # decipher_output = []
     iv = np.array([1,2], dtype=np.uint32)
+    ha = np.empty((len(key_list)* len(bytes_in)/2), dtype=np.uint32)
 
+    i = 0
+    j = 0
     # create a list of  ha and initialize output
-    for i in range(len(key_list)):
+    while(j < (len(key_list))):
         # create a long list with the same key for len(bytes_in)/2 so it could be possible to pop from ha for every thread call
-        for j in range(len(bytes_in)/2):
-            ha[j+i] = np.fromstring(hashlib.md5(key_list[i]).digest(), np.uint32)
+        ha[j*len(bytes_in) + i] = np.fromstring(hashlib.md5(key_list[j]).digest(), np.uint32)
+        i = i + 1
+
+        if(i == len(bytes_in)):
+            i = 0
+            j = j + 1;
 
         # output.append(np.empty_like(bytes_in))
 

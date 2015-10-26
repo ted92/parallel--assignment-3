@@ -30,7 +30,7 @@ def decrypt_bytes(bytes_in, key):
     num_blocks = ((length / 2) / num_threads) + 1
 
     # call the function decipher and generate the output [v1,v2] nump array
-    decipher_output = np.empty(lenght, dtype=np.uint32)
+    decipher_output = np.empty(length, dtype=np.uint32)
 
     func(np.int32(32), drv.In(bytes_in), drv.In(ha), drv.InOut(decipher_output), np.int32(length), block=(num_threads,1,1), grid=(num_blocks,1,1))
 
