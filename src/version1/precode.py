@@ -13,7 +13,6 @@ import string
 import collections
 import time
 import decrypt_cuda
-import decrypt_cuda_v2
 
 base_path = "."
 known = "but safe"
@@ -61,57 +60,27 @@ def guess_password(max_length, in_data, known_part):
 
 
     while(guesses):
+        cur_guess = guesses.popleft()
 
-        # pop first 500 guesses if there are any
-        if(len(guesses)<500):
+        if(len(cur_guess) > max_length):
+            return False
 
-            cur_guess = guesses.popleft()
+        # decrypt and recondtruct the message
+        # decrypt_bytes in here is more useful to split each key for each threads
 
-            if(len(cur_guess) > max_length):
-                return False
+        # cuda version
+        decrypted = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
 
-            # decrypt and recondtruct the message
-            # decrypt_bytes in here is more useful to split each key for each threads
+        # sequential version
+        # decrypted = decrypt_bytes(in_data, cur_guess)
+        reconstructed = reconstruct_secret(decrypted)
 
-            # cuda version
-            decrypted = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
-
-            # sequential version
-            # decrypted = decrypt_bytes(in_data, cur_guess)
-            reconstructed = reconstruct_secret(decrypted)
-
-            if(try_password(reconstructed, known_part)):
-                return cur_guess
-            else:
-                if(len(cur_guess) < max_length):
-                    for char in string.printable:
-                        guesses.append(cur_guess + char)
-
+        if(try_password(reconstructed, known_part)):
+            return cur_guess
         else:
-            # call another parallel class which parallelize also the keys
-            cur_guesses = []
-            # pop first 500 elementsfrom guesses
-            i = 0
-            while (i < 500):
-                cur_guesses.append(guesses.popleft())
-                ++i
-            # return a list of decrypted messages
-            decrypted_list = decrypt_cuda_v2.decrypt_bytes(in_data, cur_guesses)
-
-            # in decrypted_list there is a long array made of all the decrypted values from 500 keys.
-            # each len(in_data) position there is a new key
-
-            #TODO: PROBLEM: HOW DO I RECOGNIZE WHICH KEY IS? according to i number
-            for i in range(len(decrypted_list)/len(in_data)):
-                reconstructed = reconstruct_secret(decrypted_list[(i*len(in_data)):((i+1) * len(in_data))])
-                if(try_password(reconstructed, known_part)):
-                    return cur_guesses[i]
-                else:
-                    if(len(cur_guesses[i]) < max_length):
-                        for char in string.printable:
-                            guesses.append(cur_guesses[i] + char)
-
-
+            if(len(cur_guess) < max_length):
+                for char in string.printable:
+                    guesses.append(cur_guess + char)
 
 def try_password(reconstructed, known_part):
     """Check if a password is correct by decrypting, reconstructing, and looking for the known string.

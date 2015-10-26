@@ -15,6 +15,7 @@ def decrypt_bytes(bytes_in, key):
     # get the function from the cuda_kernel
     func = sm.get_function("decipher")
 
+    # each thread will have a cur_guess
     iv = np.array([1,2], dtype=np.uint32)
     ha = np.fromstring(hashlib.md5(key).digest(), np.uint32)
 
