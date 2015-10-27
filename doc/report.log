@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.1415926-2.5-0.9999.3 (MiKTeX 2.9) (preloaded format=xelatex 2015.10.13)  13 OCT 2015 18:50
+This is XeTeX, Version 3.1415926-2.5-0.9999.3 (MiKTeX 2.9) (preloaded format=xelatex 2015.10.13)  27 OCT 2015 12:23
 entering extended mode
 **report.tex
 
@@ -501,8 +501,68 @@ Requested font "cmsy8" at 8.0pt
 Requested font "cmex10" at 10.95pt
 Requested font "cmex7" at 7.69997pt
 Requested font "cmex7" at 5.5pt
+File: encryption.pdf Graphic file (type QTm)
 
-No file report.bbl.
+<use  "encryption.pdf" >
+Overfull \hbox (6.0pt too wide) in paragraph at lines 97--98
+ [][] 
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[1
+
+
+]
+File: parallel_sol_1.pdf Graphic file (type QTm)
+ <use  "parallel_sol_1.pdf" >
+Overfull \hbox (6.0pt too wide) in paragraph at lines 139--140
+ [][] 
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+File: parallel_sol_2.pdf Graphic file (type QTm)
+<use  "parallel_sol_2.pdf" >
+Overfull \hbox (6.0pt too wide) in paragraph at lines 147--148
+ [][] 
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Underfull \vbox (badness 2418) has occurred while \output is active []
+
+
+Underfull \vbox (badness 2103) has occurred while \output is active []
+
+
+
+Package Fancyhdr Warning: \headheight is too small (12.0pt): 
+ Make it at least 13.38458pt.
+ We now make it that large for the rest of the document.
+ This may cause the page layout to be inconsistent, however.
+
+[2]
+("C:\Users\Enrico\Dropbox\Università Enrico Tedeschi\Master UiT\1 - Year\3201 -
+ Parallel Programming\assignment3\doc\report.bbl"
+Requested font "ptmr7t" at 7.69997pt
+Requested font "ptmr7t" at 5.5pt
+
+Underfull \hbox (badness 2150) in paragraph at lines 4--8
+[]\OT1/ptm/m/n/11 Wikipedia - cbc.  []$https : / / en . wikipedia . org / wiki 
+/
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4--8
+\OT1/ptm/m/n/11 Block[]cipher[]mode[]of[]operation # Cipher[]Block[]
+ []
+
+)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -514,27 +574,25 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 284.
-[1
-
-
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 194.
+[3
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 284.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 194.
 
 ("C:\Users\Enrico\Dropbox\Università Enrico Tedeschi\Master UiT\1 - Year\3201 -
  Parallel Programming\assignment3\doc\report.aux")
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 284.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 284.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 284.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 194.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 194.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 194.
  ) 
 Here is how much of TeX's memory you used:
- 11232 strings out of 428790
- 158726 string characters out of 3163801
- 236252 words of memory out of 3000000
- 14500 multiletter control sequences out of 15000+200000
- 26115 words of font info for 61 fonts, out of 3000000 for 9000
+ 11258 strings out of 428790
+ 159183 string characters out of 3163801
+ 246537 words of memory out of 3000000
+ 14520 multiletter control sequences out of 15000+200000
+ 27129 words of font info for 63 fonts, out of 3000000 for 9000
  1096 hyphenation exceptions out of 8191
- 29i,8n,45p,1545b,325s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 29i,12n,45p,919b,931s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on report.pdf (1 page).
+Output written on report.pdf (3 pages).

@@ -18,6 +18,9 @@ import decrypt_cuda_v2
 base_path = "."
 known = "but safe"
 
+# number of maximum key to process in parallel
+NUM_KEY = 20
+
 def main():
     """Run when invoked as stand-alone.
     Encrypt something, then time how long it takes to decrypt it by guessing the password.
@@ -62,8 +65,8 @@ def guess_password(max_length, in_data, known_part):
 
     while(guesses):
 
-        # pop first 500 guesses if there are any
-        if(len(guesses)<500):
+        # pop first NUM_KEY guesses if there are any
+        if(len(guesses)<NUM_KEY):
 
             cur_guess = guesses.popleft()
 
@@ -89,11 +92,11 @@ def guess_password(max_length, in_data, known_part):
 
         else:
             # call another parallel class which parallelize also the keys
-            cur_guesses = []
-            # pop first 500 elementsfrom guesses
+            cur_guesses = np.empty(NUM_KEY, dtype=np.uint32)
+            # pop first NUM_KEY elements from guesses
             i = 0
-            while (i < 500):
-                cur_guesses.append(guesses.popleft())
+            while (i < NUM_KEY):
+                cur_guesses[i] = guesses.popleft()
                 i = i + 1
             # return a list of decrypted messages
             decrypted_list = decrypt_cuda_v2.decrypt_bytes(in_data, cur_guesses)
