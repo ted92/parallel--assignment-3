@@ -16,7 +16,7 @@ import decrypt_cuda
 
 base_path = "."
 known = "but safe"
-
+Messages_to_reconstruct = 500
 def main():
     """Run when invoked as stand-alone.
     Encrypt something, then time how long it takes to decrypt it by guessing the password.
@@ -69,23 +69,24 @@ def guess_password(max_length, in_data, known_part):
         # decrypt_bytes in here is more useful to split each key for each threads
 
         # cuda version
-        decrypted = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
 
-        # sequential version
-        # decrypted = decrypt_bytes(in_data, cur_guess)
+        """ create an array of decrypted and reconstructed  so also reconstruct could be executed in parallel"""
+        i = 0
+        while (i < Num_to_reconstruct):
+            decrypted[i] = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
+            i = i + 1
 
         # call the parallelised version of reconstruct
+        # reconstruct is an array containing all the reconstruct solution for each message
         reconstructed = decrypt_cuda.reconstruct_secret(decrypted)
 
-        # call the reconstruct secret in cuda kernel
-        # reconstructed = reconstruct_secret(decrypted)
-
-        if(try_password(reconstructed, known_part)):
-            return cur_guess
-        else:
-            if(len(cur_guess) < max_length):
-                for char in string.printable:
-                    guesses.append(cur_guess + char)
+        for j in range(len(reconstructed)):
+            if(try_password(reconstructed[j], known_part)):
+                return cur_guess
+            else:
+                if(len(cur_guess) < max_length):
+                    for char in string.printable:
+                        guesses.append(cur_guess + char)
 
 def try_password(reconstructed, known_part):
     """Check if a password is correct by decrypting, reconstructing, and looking for the known string.

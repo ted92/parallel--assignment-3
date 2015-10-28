@@ -43,24 +43,24 @@ def decrypt_bytes(bytes_in, key):
         i += 2
     return output
 
-def reconstruct_secret(secret):
+def reconstruct_secret(secrets):
+    # each element of secrets is a secret
     f = open("cuda_kernel_reconstruct.cu", 'r')
     sm = pycuda.compiler.SourceModule(f.read(), options=['-lineinfo'])
 
-    func = sm.get_function("reconstruc_secret")
+    func = sm.get_function("reconstruct_secret")
+
+    num_threads = 256
+    num_blocks = (len(secrets) / num_threads) + 1
 
     # result type: numpy.ndarray. each element is numpy.uint8
     result = np.empty_like(secret.astype(np.uint8))
-    #mask type: long
-    mask = 0xffL
 
-    num_threads = 256
-    num_blocks = (len(secret) / num_threads) + 1
+    func(drv.InOut(result), drv.In(secrets), np.int32(len(secrets)), block=(num_threads,1,1), grid=(num_blocks,1,1))
 
-    length_secret = len(secret)
-    length_result = len(result)
+
     # call the reconstruct function in the kernel
-    func(drv.InOut(secret), drv.InOut(result), np.int32(length_secret), np.int32(length_result), block=(num_threads,1,1), grid=(num_blocks,1,1))
 
+    # result must be an array of the reconstructed messages
     return result
 
