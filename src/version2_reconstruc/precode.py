@@ -16,7 +16,7 @@ import decrypt_cuda
 
 base_path = "."
 known = "but safe"
-Messages_to_reconstruct = 500
+Messages = 500
 def main():
     """Run when invoked as stand-alone.
     Encrypt something, then time how long it takes to decrypt it by guessing the password.
@@ -71,17 +71,31 @@ def guess_password(max_length, in_data, known_part):
         # cuda version
 
         """ create an array of decrypted and reconstructed  so also reconstruct could be executed in parallel"""
-        i = 0
-        while (i < Num_to_reconstruct):
-            decrypted[i] = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
-            i = i + 1
+        if(len(cur_guess) > Messages):
+        # if there are enough key in the list then try to execute them in parallel during the reconstruct phase
+            decrypted = [None] * Messages
+            i = 0
+            while (i < Messages):
+                decrypted[i] = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
+                # pop another value from the list
+                cur_guess = guesses.popleft()
+                i = i + 1
 
-        # call the parallelised version of reconstruct
-        # reconstruct is an array containing all the reconstruct solution for each message
-        reconstructed = decrypt_cuda.reconstruct_secret(decrypted)
+            # call the parallelised version of reconstruct
+            # reconstruct is an array containing all the reconstruct solution for each message
+            reconstructed = decrypt_cuda.reconstruct_secret(decrypted)
 
-        for j in range(len(reconstructed)):
-            if(try_password(reconstructed[j], known_part)):
+            for j in range(len(reconstructed)):
+                if(try_password(reconstructed[j], known_part)):
+                    return cur_guess
+                else:
+                    if(len(cur_guess) < max_length):
+                        for char in string.printable:
+                            guesses.append(cur_guess + char)
+        else:
+            decrypted = decrypt_cuda.decrypt_bytes(in_data, cur_guess)
+            reconstructed_m = reconstruct_secret(decrypted)
+            if(try_password(reconstructed_m, known_part)):
                 return cur_guess
             else:
                 if(len(cur_guess) < max_length):

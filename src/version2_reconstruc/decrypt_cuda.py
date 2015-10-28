@@ -56,7 +56,7 @@ def reconstruct_secret(secrets):
     # result type: numpy.ndarray. each element is numpy.uint8
     result = np.empty_like(secret.astype(np.uint8))
 
-    func(drv.InOut(result), drv.In(secrets), np.int32(len(secrets)), block=(num_threads,1,1), grid=(num_blocks,1,1))
+    func(drv.InOut(result), drv.In(secrets), np.int32(len(secrets)), np.int32(len(secrets[0])), block=(num_threads,1,1), grid=(num_blocks,1,1))
 
 
     # call the reconstruct function in the kernel
